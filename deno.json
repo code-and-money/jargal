@@ -1,11 +1,9 @@
 {
-  "name": "@codeandmoney/genstuff",
-  "version": "0.0.10",
+  "name": "@codeandmoney/jargal",
+  "version": "0.0.1",
   "description": "Renderer",
-  "homepage": "https://github.com/repos/genstuff",
-  "bugs": "https://github.com/repos/genstuff/issues",
   "license": "MIT",
-  "author": "Alexey Sokolov",
+  "author": "Code & Money Team",
   "imports": {
     "es-toolkit": "jsr:@es-toolkit/es-toolkit@^1.39.10",
     "@std/assert": "jsr:@std/assert@^1.0.14",
