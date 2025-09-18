@@ -1,12 +1,9 @@
 import type { Action } from "../types.ts"
 import * as v from "valibot"
 
-const primitiveSchema = v.union( [ v.pipe( v.string(), v.minLength( 1 ) ), v.boolean(), v.number() ] )
+const primitiveSchema = v.union( [ v.pipe( v.string(), v.minLength( 1 ) ), v.boolean() ] )
 
-const defaultSchema = v.record(
-  v.string(),
-  v.union( [ primitiveSchema, v.array( primitiveSchema ) ] ),
-)
+const defaultSchema = v.record( v.string(), v.union( [ primitiveSchema, v.array( primitiveSchema ) ] ) )
 
 export function validateAnswers<Schema extends v.BaseSchema<unknown, unknown, v.BaseIssue<unknown>>>(
   schema?: Schema,

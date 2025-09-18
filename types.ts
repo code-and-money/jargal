@@ -1,42 +1,42 @@
+// deno-lint-ignore-file
+
 import type { Renderer } from "./renderer.ts"
 
-export type Config = {
+export interface Config {
   generators: GeneratorConfig[]
 }
 
-export type Context = {
-  answers: Record<string, string | number | boolean | (string | number | boolean)[]>
+export interface Context extends Record<string, unknown> {
+  answers: Record<string, string | boolean | (string | boolean)[]>
   errors: Error[]
-} & Record<string, unknown>
-
-export type DeepReadonly<T> = {
-  readonly [Key in keyof T]:
-    // deno-lint-ignore no-explicit-any
-    T[Key] extends any[] ? T[Key]
-      : T[Key] extends object ? DeepReadonly<T[Key]>
-      : T[Key]
 }
 
-export type GeneratorParams = {
+export type DeepReadonly<T> = {
+  readonly [Key in keyof T]: T[Key] extends any[] ? T[Key]
+    : T[Key] extends object ? DeepReadonly<T[Key]>
+    : T[Key]
+}
+
+export interface GeneratorParams {
   context: Context
   renderer: Renderer
   generator: GeneratorConfig
   hooks?: ActionHooks
 }
 
-export type ActionParams = {
+export interface ActionParams {
   context: Context
   renderer: Renderer
   hooks?: ActionHooks
 }
 
-export type ExecuteActionParams = {
+export interface ExecuteActionParams {
   context: Context
   renderer: Renderer
   action: Action
 }
 
-export type GeneratorConfig = {
+export interface GeneratorConfig {
   name: string
   // TODO: implement commented out interface
   description?: string // | (( params: unknown ) => string)
@@ -44,13 +44,13 @@ export type GeneratorConfig = {
   actions: Action[] // | Promise<Action[]>  | (( params: unknown ) => Action[] | Promise<Action[]>)
 }
 
-export type TextHelpers = Record<string, HelperFn>
-
-export type Actions = Action | Action[]
-
-export type Action = ( params: ActionParams ) => void | Action | Action[] | Promise<void | Action | Action[]>
-
 export type HelperFn = ( str: string ) => string
+
+export interface TextHelpers extends Record<string, HelperFn> {}
+
+export interface Action {
+  ( params: ActionParams ): void | Action | Action[] | Promise<void | Action | Action[]>
+}
 
 export interface ActionHooksFailures {
   path: string
@@ -67,3 +67,31 @@ export interface ActionHooks {
   onSuccess?: ( change: ActionHooksChanges ) => void
   onFailure?: ( failure: ActionHooksFailures ) => void
 }
+
+export type SetterScope = "helper" | "partial"
+
+export interface SetOptions {
+  override?: boolean
+}
+
+export interface MappingScope {
+  helper: { name: string; target: HelperFn }
+  partial: { name: string; target: string }
+}
+
+interface Mapping {
+  helper: HelperFn
+  partial: string
+}
+
+type GetSetterType<Key extends SetterScope> = Mapping[Key]
+
+export interface Setter<T extends SetterScope> {
+  target: GetSetterType<T>
+  name: string
+}
+
+export type GetReturnType<T extends SetterScope> = Mapping[T]
+
+export interface Partials extends Record<string, string> {}
+export interface Helpers extends Record<string, any> {}

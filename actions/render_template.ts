@@ -8,15 +8,11 @@ export function renderTemplate( { fullpath, template, getData, saveFn }: {
   saveFn?: ( config: WriteActionConfig ) => Action
 } ): Action {
   return function execute( params ) {
-    const renderedTemplate = params.renderer.renderString( {
-      template,
-      data: getData?.( params.context ) ?? params.context,
-    } )
+    const data = getData?.( params.context ) ?? params.context
 
-    const renderedPath = params.renderer.renderString( {
-      template: fullpath,
-      data: getData?.( params.context ) ?? params.context,
-    } )
+    const renderedTemplate = params.renderer.renderString( { template, data } )
+
+    const renderedPath = params.renderer.renderString( { template: fullpath, data } )
 
     if ( saveFn ) {
       return saveFn( { content: renderedTemplate, destination: renderedPath } )
