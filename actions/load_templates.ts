@@ -1,8 +1,8 @@
-import type { Action } from "../types.ts"
+import type { ContextAction } from "../types.ts"
 import { join, relative, resolve } from "@std/path"
 
-export function loadTemplates( templatesPath: string ): Action {
-  return async function execute( params ) {
+export function loadTemplates( templatesPath: string ): ContextAction {
+  return async function execute() {
     const templates: Map<string, { fullPath: string; realativePath: string; content: string }> = new Map()
 
     for await ( const fullPath of walkDir( templatesPath ) ) {
@@ -13,7 +13,7 @@ export function loadTemplates( templatesPath: string ): Action {
       templates.set( realativePath, { content: new TextDecoder().decode( contentRaw ), fullPath, realativePath } )
     }
 
-    Object.assign( params.context, { templates } )
+    return { templates }
   }
 }
 

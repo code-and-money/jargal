@@ -95,3 +95,5 @@ export type GetReturnType<T extends SetterScope> = Mapping[T]
 
 export interface Partials extends Record<string, string> {}
 export interface Helpers extends Record<string, any> {}
+
+export type ContextAction = ( context: DeepReadonly<Context> ) => Partial<Context> | Promise<Partial<Context>>
