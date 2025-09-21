@@ -17,7 +17,7 @@ export function loadTemplates( templatesPath: string ): ContextAction {
   }
 }
 
-async function* walkDir( path: string ): AsyncGenerator<string> {
+async function* walkDir( path: string ): AsyncGenerator<string, void, void> {
   for await ( const entry of Deno.readDir( path ) ) {
     const fullpath = join( path, entry.name )
 
