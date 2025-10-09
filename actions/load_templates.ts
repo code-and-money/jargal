@@ -1,14 +1,15 @@
 import type { ContextAction } from "../types.ts"
-import { join, relative, resolve } from "@std/path"
+import { promises as fs } from "node:fs"
+import path from "path"
 
 export function loadTemplates( templatesPath: string ): ContextAction {
   return async function execute() {
     const templates: Map<string, { fullPath: string; realativePath: string; content: string }> = new Map()
 
     for await ( const fullPath of walkDir( templatesPath ) ) {
-      const realativePath = relative( templatesPath, fullPath )
+      const realativePath = path.relative( templatesPath, fullPath )
 
-      const contentRaw = await Deno.readFile( resolve( templatesPath, fullPath ) )
+      const contentRaw = await fs.readFile( path.resolve( templatesPath, fullPath ) )
 
       templates.set( realativePath, { content: new TextDecoder().decode( contentRaw ), fullPath, realativePath } )
     }
@@ -17,16 +18,16 @@ export function loadTemplates( templatesPath: string ): ContextAction {
   }
 }
 
-async function* walkDir( path: string ): AsyncGenerator<string, void, void> {
-  for await ( const entry of Deno.readDir( path ) ) {
-    const fullpath = join( path, entry.name )
+async function* walkDir( dir: string ): AsyncGenerator<string, void, void> {
+  const entries = await fs.readdir( dir, { withFileTypes: true } )
 
-    if ( entry.isDirectory ) {
-      yield* walkDir( fullpath )
-    }
+  for ( const entry of entries ) {
+    const fullPath = path.join( dir, entry.name )
 
-    if ( entry.isFile ) {
-      yield fullpath
+    if ( entry.isDirectory() ) {
+      yield* walkDir( fullPath )
+    } else if ( entry.isFile() ) {
+      yield fullPath
     }
   }
 }
