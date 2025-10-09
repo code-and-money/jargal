@@ -1,6 +1,6 @@
 {
   "name": "@codeandmoney/jargal",
-  "version": "0.0.2-RC.4",
+  "version": "0.0.2-RC.5",
   "private": false,
   "publishConfig": { "access": "public" },
   "description": "Renderer",
