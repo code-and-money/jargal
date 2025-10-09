@@ -1,5 +1,5 @@
 // TODO: get rid of `node:` imports and "del", "mkdirp" libraries
-import { access } from "node:fs/promises"
+import { access, mkdir, rm, writeFile } from "node:fs/promises"
 
 import { dirname } from "@std/path"
 
@@ -24,12 +24,12 @@ export type WriteActionConfig = {
 
 export function write( config: WriteActionConfig ): Action {
   return async function execute() {
-    await Deno.mkdir( dirname( config.destination ), { recursive: true } )
+    await mkdir( dirname( config.destination ), { recursive: true } )
 
     let doesExist = await fileExists( config.destination )
 
     if ( doesExist && config.mode === "force" ) {
-      await Deno.remove( config.destination, { recursive: true } )
+      await rm( config.destination, { recursive: true } )
       doesExist = false
     }
 
@@ -42,7 +42,7 @@ export function write( config: WriteActionConfig ): Action {
       return
     }
 
-    await Deno.writeFile( config.destination, new TextEncoder().encode( config.content ) )
+    await writeFile( config.destination, new TextEncoder().encode( config.content ) )
   }
 
   // if(eager) {
@@ -51,7 +51,7 @@ export function write( config: WriteActionConfig ): Action {
   //   return execute
   // }
   // return async ( params ) => {
-  //   await Deno.mkdir( dirname( config.destination ), { recursive: true } )
+  //   await mkdir( dirname( config.destination ), { recursive: true } )
 
   //   // const template = ( await readFile( config.template ) ).toString()
 
@@ -60,7 +60,7 @@ export function write( config: WriteActionConfig ): Action {
   //   const doesExist = await fileExists( config.destination )
 
   //   if ( doesExist && config.writeMode === "force" ) {
-  //     await Deno.remove( config.destination, { recursive: true } )
+  //     await remove( config.destination, { recursive: true } )
   //   }
 
   //   if ( doesExist ) {
@@ -72,7 +72,7 @@ export function write( config: WriteActionConfig ): Action {
   //     throw `File already exists\n -> ${config.destination}`
   //   }
 
-  //   await Deno.writeFile( config.destination, new TextEncoder().encode( rendered ) )
+  //   await writeFile( config.destination, new TextEncoder().encode( rendered ) )
   // }
 }
 
