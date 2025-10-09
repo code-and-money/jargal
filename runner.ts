@@ -17,6 +17,12 @@ export async function runGenerator( { context, generator, renderer }: GeneratorP
 export async function executeAction(
   { action, context, renderer }: ExecuteActionParams,
 ): Promise<void | Action | Action[]> {
+  if ( Array.isArray( action ) ) {
+    for ( const action_ of action ) {
+      await executeAction( { action: action_, context, renderer } )
+    }
+  }
+  
   const executed = await action( { context, renderer } )
 
   if ( !executed ) {
