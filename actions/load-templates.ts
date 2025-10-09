@@ -1,5 +1,5 @@
 import type { ContextAction } from "../types.ts"
-import { promises as fs } from "node:fs"
+import { readdir, readFile } from "node:fs/promises"
 import path from "node:path"
 
 export function loadTemplates( templatesPath: string ): ContextAction {
@@ -9,7 +9,7 @@ export function loadTemplates( templatesPath: string ): ContextAction {
     for await ( const fullPath of walkDir( templatesPath ) ) {
       const realativePath = path.relative( templatesPath, fullPath )
 
-      const contentRaw = await fs.readFile( path.resolve( templatesPath, fullPath ) )
+      const contentRaw = await readFile( path.resolve( templatesPath, fullPath ) )
 
       templates.set( realativePath, { content: new TextDecoder().decode( contentRaw ), fullPath, realativePath } )
     }
@@ -19,7 +19,7 @@ export function loadTemplates( templatesPath: string ): ContextAction {
 }
 
 async function* walkDir( dir: string ): AsyncGenerator<string, void, void> {
-  const entries = await fs.readdir( dir, { withFileTypes: true } )
+  const entries = await readdir( dir, { withFileTypes: true } )
 
   for ( const entry of entries ) {
     const fullPath = path.join( dir, entry.name )

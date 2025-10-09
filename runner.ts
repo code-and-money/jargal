@@ -1,9 +1,8 @@
-import { assert } from "@std/assert"
 import { Renderer } from "./renderer.ts"
 import * as v from "valibot"
-
 import type { Action, Config, ExecuteActionParams, GeneratorParams } from "./types.ts"
-import { selectGenerator } from "./actions/select_generator.ts"
+import { selectGenerator } from "./actions/select-generator.ts"
+import assert from "node:assert"
 
 export async function runGenerator( { context, generator, renderer }: GeneratorParams ): Promise<void> {
   assert( generator )
@@ -19,8 +18,16 @@ export async function executeAction(
 ): Promise<void | Action | Action[]> {
   if ( Array.isArray( action ) ) {
     for ( const action_ of action ) {
-      return await executeAction( { action: action_, context, renderer } )
+      const executed = await action_( { context, renderer } )
+      if ( !executed ) {
+        continue
+      }
+      await execRecursive( executed, { context, renderer } )
     }
+  }
+
+  if ( typeof action !== "function" ) {
+    return undefined
   }
 
   const executed = await action( { context, renderer } )
@@ -37,7 +44,7 @@ async function execRecursive(
   { context, renderer }: Omit<ExecuteActionParams, "action">,
 ): Promise<Action | Action[] | void> {
   if ( Array.isArray( executed ) ) {
-    const executionResults: (Action)[] = []
+    const executionResults: Action[] = []
 
     for ( const action of executed ) {
       const result = await executeAction( { action, context, renderer } )
@@ -92,9 +99,7 @@ export async function run( config_: Config ): Promise<void> {
     renderer: new Renderer(),
     generator: {
       name: "select",
-      actions: [
-        selectGenerator( config ),
-      ],
+      actions: [ selectGenerator( config ) ],
     },
   } )
 }

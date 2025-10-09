@@ -1,8 +1,8 @@
-import { assert } from "@std/assert"
 import type { Action, Config } from "../types.ts"
 import { prompt } from "./prompt.ts"
 import { Renderer } from "../renderer.ts"
 import { runGenerator } from "../runner.ts"
+import assert from "node:assert"
 
 export function selectGenerator( config: Config ): Action {
   const choices = config.generators.map( ( { name, description } ) => ( { name, hint: description } ) )

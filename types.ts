@@ -48,7 +48,9 @@ export type HelperFn = ( str: string ) => string
 
 export interface TextHelpers extends Record<string, HelperFn> {}
 
-export type Action = ( params: ActionParams ) => void | Action | Action[] | Promise<void | Action | Action[]>
+export type Action<T extends object = {}> = (
+  params: ActionParams & T,
+) => void | Action | Action[] | Promise<void | Action | Action[]>
 
 export interface ActionHooksFailures {
   path: string

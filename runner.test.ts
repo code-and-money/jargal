@@ -1,13 +1,16 @@
+import test from "node:test"
+import assert from "node:assert"
+import { join } from "node:path"
+
 import { run } from "./runner.ts"
-import { assert } from "@std/assert"
-import { join } from "@std/path"
 import { blank1, blank2 } from "./actions/blank.ts"
 
 import type { Config, GeneratorConfig } from "./types.ts"
-import { loadTemplates } from "./actions/load_templates.ts"
-import { context } from "./actions/context.ts"
 
-Deno.test("simple", async () => {
+import { context } from "./actions/context.ts"
+import { loadTemplates } from "./actions/load-templates.ts"
+
+test("simple", async () => {
   const simple: GeneratorConfig = {
     name: "simple",
     description: "description",
@@ -16,7 +19,7 @@ Deno.test("simple", async () => {
       blank2,
       context( () => ( { kek: Math.random() } ) ),
       console.log,
-      loadTemplates( join( Deno.cwd(), "actions" ) ),
+      loadTemplates( join( process.cwd(), "actions" ) ),
     ],
   }
 

@@ -1,12 +1,11 @@
 // TODO: get rid of `node:` imports and "del", "mkdirp" libraries
 import { access, mkdir, rm, writeFile } from "node:fs/promises"
 
-import { dirname } from "@std/path"
-
 import type { Action } from "../types.ts"
+import assert from "node:assert"
+import { dirname } from "node:path"
 
 // type WriteActionConfig = {
-
 //   data?: Record<string, unknown>
 //   destination: string
 //   writeMode?: "skip-if-exists" | "force"
@@ -16,34 +15,38 @@ import type { Action } from "../types.ts"
 //   |
 // )
 
-export type WriteActionConfig = {
-  content: string
-  destination: string
-  mode?: "force" | "skip-if-exists"
-}
+export type WriteActionConfig = { destination?: string; content?: string; mode?: "force" | "skip-if-exists" }
 
-export function write( config: WriteActionConfig ): Action {
-  return async function execute() {
-    await mkdir( dirname( config.destination ), { recursive: true } )
+export function write(
+  { destination, content, mode }: WriteActionConfig,
+): Action<{ content?: string; destination?: string }> {
+  return async function execute( { content: content_, destination: destination_ } ) {
+    const dest = destination || destination_
+    const cntn = content || content_
 
-    let doesExist = await fileExists( config.destination )
+    assert( dest, "must provide `dest`" )
+    assert( cntn, "must provide `cntn`" )
 
-    if ( doesExist && config.mode === "force" ) {
-      await rm( config.destination, { recursive: true } )
+    await mkdir( dirname( dest ), { recursive: true } )
+
+    let doesExist = await fileExists( dest )
+
+    if ( doesExist && mode === "force" ) {
+      await rm( dest, { recursive: true } )
       doesExist = false
     }
 
-    if ( doesExist && config.mode !== "skip-if-exists" ) {
-      throw `File already exists\n -> ${config.destination}`
+    if ( doesExist && mode !== "skip-if-exists" ) {
+      throw `File already exists\n -> ${dest}`
     }
 
-    if ( doesExist && config.mode === "skip-if-exists" ) {
-      console.info( `[SKIPPED] ${config.destination} (exists)` )
+    if ( doesExist && mode === "skip-if-exists" ) {
+      console.info( `[SKIPPED] ${dest} (exists)` )
       return
     }
 
-    await writeFile( config.destination, new TextEncoder().encode( config.content ) )
-  }
+    await writeFile( dest, new TextEncoder().encode( cntn ) )
+  } satisfies Action<{ content?: string; destination?: string }>
 
   // if(eager) {
   //   return execute()
