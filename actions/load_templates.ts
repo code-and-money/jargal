@@ -1,6 +1,6 @@
 import type { ContextAction } from "../types.ts"
 import { promises as fs } from "node:fs"
-import path from "path"
+import path from "node:path"
 
 export function loadTemplates( templatesPath: string ): ContextAction {
   return async function execute() {
