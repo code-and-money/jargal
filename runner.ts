@@ -52,7 +52,7 @@ async function execRecursive(
     return await executeAction( { action: executed, context, renderer } )
   }
 
-  // assert( !executed )
+  assert( !executed )
 
   return undefined
 }
