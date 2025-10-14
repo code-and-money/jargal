@@ -1,23 +1,24 @@
-import type { Action, Config } from "../types.ts"
-import { prompt } from "./prompt.ts"
-import { Renderer } from "../renderer.ts"
-import { runGenerator } from "../runner.ts"
-import assert from "node:assert"
+import type { Action, Config } from "../types.ts";
+import { prompt } from "./prompt.ts";
+import { Renderer } from "../renderer.ts";
+import { runGenerator } from "../runner.ts";
+import assert from "node:assert";
 
-export function selectGenerator( config: Config ): Action {
-  const choices = config.generators.map( ( { name, description } ) => ( { name, hint: description } ) )
+export function selectGenerator(config: Config): Action {
+  const choices = config.generators.map(({ name, description }) => ({
+    name,
+    hint: description,
+  }));
 
   return () => [
-    prompt( [ { type: "select", choices, message: "select", name: "generator" } ] ),
+    prompt([{ type: "select", choices, message: "select", name: "generator" }]),
 
-    function runSelectedGenerator( params ) {
-      const generator = config.generators.find( ( generator ) =>
-        generator.name === params?.context?.answers?.generator
-      )
+    function runSelectedGenerator(params) {
+      const generator = config.generators.find((generator) => generator.name === params?.context?.answers?.generator);
 
-      assert( generator )
+      assert(generator);
 
-      return runGenerator( { context: { errors: [], answers: {} }, renderer: new Renderer(), generator } )
+      return runGenerator({ context: { errors: [], answers: {} }, renderer: new Renderer(), generator });
     },
-  ]
+  ];
 }

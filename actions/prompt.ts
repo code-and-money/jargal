@@ -1,21 +1,19 @@
-// deno-lint-ignore-file no-explicit-any
+import enquirer from "enquirer";
+import type { Action } from "../types.ts";
+import { EventEmitter } from "node:events";
 
-import enquirer from "enquirer"
-import type { Action } from "../types.ts"
-import { EventEmitter } from "node:events"
+export function prompt(questions: PromptOptions | PromptOptions[]): Action {
+  return async function executePrompts(params) {
+    const answers = await enquirer.prompt(questions);
 
-export function prompt( questions: PromptOptions | PromptOptions[] ): Action {
-  return async function executePrompts( params ) {
-    const answers = await enquirer.prompt( questions )
-
-    if ( !params.context.answers ) {
-      Object.assign( params.context, { answers: {} } )
+    if (!params.context.answers) {
+      Object.assign(params.context, { answers: {} });
     }
 
-    for ( const [ key, value ] of Object.entries( answers ) ) {
-      Object.assign( params.context.answers, { [key]: value } )
+    for (const [key, value] of Object.entries(answers)) {
+      Object.assign(params.context.answers, { [key]: value });
     }
-  }
+  };
 }
 
 // NOTE: Stupid enquirer doesn't export types at all!!!
@@ -38,94 +36,86 @@ type PromptTypes =
   | "text"
   | "numeral"
   | "snippet"
-  | "sort"
+  | "sort";
 
 interface BasePromptOptions {
-  name: string | (() => string)
-  type: PromptTypes | (() => PromptTypes)
-  message: string | (() => string) | (() => Promise<string>)
-  prefix?: string
-  initial?: any
-  required?: boolean
-  enabled?: boolean | string
-  disabled?: boolean | string
-  format?( value: string ): string | Promise<string>
-  result?( value: string ): string | Promise<string>
-  skip?: (( state: object ) => boolean | Promise<boolean>) | boolean
-  validate?( value: string ): boolean | string | Promise<boolean | string>
-  onSubmit?( name: string, value: any, prompt: BasePrompt ): boolean | Promise<boolean>
-  onCancel?( name: string, value: any, prompt: BasePrompt ): boolean | Promise<boolean>
-  stdin?: NodeJS.ReadStream
-  stdout?: NodeJS.WriteStream
+  name: string | (() => string);
+  type: PromptTypes | (() => PromptTypes);
+  message: string | (() => string) | (() => Promise<string>);
+  prefix?: string;
+  initial?: any;
+  required?: boolean;
+  enabled?: boolean | string;
+  disabled?: boolean | string;
+  format?(value: string): string | Promise<string>;
+  result?(value: string): string | Promise<string>;
+  skip?: ((state: object) => boolean | Promise<boolean>) | boolean;
+  validate?(value: string): boolean | string | Promise<boolean | string>;
+  onSubmit?(name: string, value: any, prompt: BasePrompt): boolean | Promise<boolean>;
+  onCancel?(name: string, value: any, prompt: BasePrompt): boolean | Promise<boolean>;
+  stdin?: NodeJS.ReadStream;
+  stdout?: NodeJS.WriteStream;
 }
 
 interface Choice {
-  name: string
-  message?: string
-  value?: unknown
-  hint?: string
-  role?: string
-  enabled?: boolean
-  disabled?: boolean | string
+  name: string;
+  message?: string;
+  value?: unknown;
+  hint?: string;
+  role?: string;
+  enabled?: boolean;
+  disabled?: boolean | string;
 }
 
 interface ArrayPromptOptions extends BasePromptOptions {
-  type:
-    | "autocomplete"
-    | "editable"
-    | "form"
-    | "multiselect"
-    | "select"
-    | "survey"
-    | "list"
-    | "scale"
-  choices: (string | Choice)[]
-  maxChoices?: number
-  multiple?: boolean
-  initial?: number
-  delay?: number
-  separator?: boolean
-  sort?: boolean
-  linebreak?: boolean
-  edgeLength?: number
-  align?: "left" | "right"
-  scroll?: boolean
+  type: "autocomplete" | "editable" | "form" | "multiselect" | "select" | "survey" | "list" | "scale";
+  choices: (string | Choice)[];
+  maxChoices?: number;
+  multiple?: boolean;
+  initial?: number;
+  delay?: number;
+  separator?: boolean;
+  sort?: boolean;
+  linebreak?: boolean;
+  edgeLength?: number;
+  align?: "left" | "right";
+  scroll?: boolean;
 }
 
 interface BooleanPromptOptions extends BasePromptOptions {
-  type: "confirm"
-  initial?: boolean
+  type: "confirm";
+  initial?: boolean;
 }
 
 interface StringPromptOptions extends BasePromptOptions {
-  type: "input" | "invisible" | "list" | "password" | "text"
-  initial?: string
-  multiline?: boolean
+  type: "input" | "invisible" | "list" | "password" | "text";
+  initial?: string;
+  multiline?: boolean;
 }
 
 interface NumberPromptOptions extends BasePromptOptions {
-  type: "numeral"
-  min?: number
-  max?: number
-  delay?: number
-  float?: boolean
-  round?: boolean
-  major?: number
-  minor?: number
-  initial?: number
+  type: "numeral";
+  min?: number;
+  max?: number;
+  delay?: number;
+  float?: boolean;
+  round?: boolean;
+  major?: number;
+  minor?: number;
+  initial?: number;
 }
 
 interface SnippetPromptOptions extends BasePromptOptions {
-  type: "snippet"
-  newline?: string
-  template?: string
+  type: "snippet";
+  newline?: string;
+  template?: string;
 }
 
 interface SortPromptOptions extends BasePromptOptions {
-  type: "sort"
-  hint?: string
-  drag?: boolean
-  numbered?: boolean
+  type: "sort";
+  hint?: string;
+  drag?: boolean;
+  numbered?: boolean;
 }
 
 type PromptOptions =
@@ -135,10 +125,10 @@ type PromptOptions =
   | StringPromptOptions
   | NumberPromptOptions
   | SnippetPromptOptions
-  | SortPromptOptions
+  | SortPromptOptions;
 
 declare class BasePrompt extends EventEmitter {
-  constructor( options?: PromptOptions )
-  render(): void
-  run(): Promise<any>
+  constructor(options?: PromptOptions);
+  render(): void;
+  run(): Promise<any>;
 }
