@@ -2,7 +2,7 @@ import { Renderer } from "./renderer.ts";
 import * as v from "valibot";
 import type { Action, Config, ExecuteActionParams, GeneratorParams } from "./types.ts";
 import { selectGenerator } from "./actions/select-generator.ts";
-import assert from "node:assert";
+import assert from "node:assert/strict";
 
 export async function runGenerator({ context, generator, renderer }: GeneratorParams): Promise<void> {
   assert(generator);
@@ -78,8 +78,8 @@ const ConfigSchema = v.object({
   ),
 });
 
-export async function run(config_: Config): Promise<void> {
-  const config = v.parse(ConfigSchema, config_);
+export async function run(runConfig: Config): Promise<void> {
+  const config = v.parse(ConfigSchema, runConfig);
 
   if (config.generators.length === 1) {
     const generator = config.generators[0];
@@ -87,18 +87,15 @@ export async function run(config_: Config): Promise<void> {
     assert(generator);
 
     return await runGenerator({
-      context: { errors: [], answers: {} },
+      context: { errors: [], answers: {}, context: {} },
       renderer: new Renderer(),
       generator,
     });
   }
 
   return await runGenerator({
-    context: { errors: [], answers: {} },
+    context: { errors: [], answers: {}, context: {} },
     renderer: new Renderer(),
-    generator: {
-      name: "select",
-      actions: [selectGenerator(config)],
-    },
+    generator: { name: "select", actions: [selectGenerator(config)] },
   });
 }
