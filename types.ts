@@ -7,6 +7,7 @@ export interface Config {
 export interface Context extends Record<string, unknown> {
   answers: Record<string, string | boolean | (string | boolean)[]>;
   errors: Error[];
+  context: Record<string, any>;
 }
 
 export type DeepReadonly<T> = {

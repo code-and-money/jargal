@@ -3,20 +3,22 @@ import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
 export function loadTemplates(templatesPath: string, scope?: string): ContextAction {
-  return async function execute() {
-    const templates: Map<string, { fullPath: string; realativePath: string; content: string }> = new Map();
+  return async function execute(params) {
+    const record = { ...params.context.templates } as Record<string, Map<string, { fullPath: string; realativePath: string; content: string }>>;
+
+    if (scope) {
+      Object.assign(record, { [scope]: new Map() });
+    }
 
     for await (const fullPath of walkDir(templatesPath)) {
       const realativePath = path.relative(templatesPath, fullPath);
 
       const contentRaw = await readFile(path.resolve(templatesPath, fullPath));
 
-      const key = scope ? `${scope}::${realativePath}` : realativePath;
-
-      templates.set(key, { content: new TextDecoder().decode(contentRaw), fullPath, realativePath });
+      record[scope ? scope : "templates"]?.set(realativePath, { content: new TextDecoder().decode(contentRaw), fullPath, realativePath });
     }
 
-    return { templates };
+    return record;
   };
 }
 
