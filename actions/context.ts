@@ -5,6 +5,7 @@ import type { Action, Context, ContextAction, DeepReadonly } from "../types.ts";
 export function context(callback: ContextAction): Action {
   return async function execute(params) {
     const newContext = await callback(readonly(params.context));
+    console.log("🚀 ~ newContext:", newContext);
     merge(params.context, newContext);
   };
 }

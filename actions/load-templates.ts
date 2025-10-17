@@ -18,7 +18,7 @@ export function loadTemplates(templatesPath: string, scope?: string): ContextAct
       record[scope ? scope : "templates"]?.set(realativePath, { content: new TextDecoder().decode(contentRaw), fullPath, realativePath });
     }
 
-    return record;
+    return { templates: record };
   };
 }
 
