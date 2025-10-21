@@ -1,13 +1,13 @@
 import type { Action, Context } from "../types.ts";
 
 export function renderTemplate({
-  fullpath,
+  fullPath,
   template,
   getData,
   write,
 }: {
   template: string;
-  fullpath: string;
+  fullPath: string;
   getData?: (ctx: Context) => Record<string, unknown>;
   write?: Action<{ content?: string; destination?: string }>;
 }): Action {
@@ -20,17 +20,10 @@ export function renderTemplate({
 
     const renderedTemplate = params.renderer.renderString({ template, data });
 
-    const renderedPath = params.renderer.renderString({
-      template: fullpath,
-      data,
-    });
+    const renderedPath = params.renderer.renderString({ template: fullPath, data });
 
     if (write) {
-      return write({
-        ...params,
-        content: renderedTemplate,
-        destination: renderedPath,
-      });
+      return write({ ...params, content: renderedTemplate, destination: renderedPath });
     }
   };
 }

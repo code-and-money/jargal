@@ -32,7 +32,7 @@ export function write({ destination, content, mode }: WriteActionConfig): Action
     }
 
     if (doesExist && mode === "skip-if-exists") {
-      console.info(`[SKIPPED] ${dest} (exists)`);
+      // console.info(`[SKIPPED] ${dest} (exists)`);
       return;
     }
 
