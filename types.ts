@@ -4,11 +4,10 @@ export interface Config {
   generators: GeneratorConfig[];
 }
 
-export interface Context extends Record<string, unknown> {
+export type Context<Ctx extends object = {}> = Ctx & {
   answers: Record<string, string | boolean | (string | boolean)[]>;
   errors: Error[];
-  context: Record<string, any>;
-}
+};
 
 export type DeepReadonly<T> = {
   readonly [Key in keyof T]: T[Key] extends any[] ? T[Key] : T[Key] extends object ? DeepReadonly<T[Key]> : T[Key];
@@ -21,31 +20,31 @@ export interface GeneratorParams {
   hooks?: ActionHooks;
 }
 
-export interface ActionParams {
-  context: Context;
+export interface ActionParams<Ctx extends object = {}> {
+  context: Context<Ctx>;
   renderer: Renderer;
   hooks?: ActionHooks;
 }
 
-export interface ExecuteActionParams {
-  context: Context;
+export interface ExecuteActionParams<Ctx extends object = {}> {
+  context: Context<Ctx>;
   renderer: Renderer;
   action: Action;
 }
 
+export type ContextAction<Ctx extends object = {}> = (params: DeepReadonly<ExecuteActionParams<Ctx>>) => Partial<Context<Ctx>> | Promise<Partial<Context<Ctx>>>;
+
 export interface GeneratorConfig {
   name: string;
-  // TODO: implement commented out interface
-  description?: string; // | (( params: unknown ) => string)
-  // TODO: implement commented out interface
-  actions: Action[]; // | Promise<Action[]>  | (( params: unknown ) => Action[] | Promise<Action[]>)
+  description?: string;
+  actions: Action[];
 }
 
 export type HelperFn = (str: string) => string;
 
 export interface TextHelpers extends Record<string, HelperFn> {}
 
-export type Action<T extends object = {}> = (params: ActionParams & T) => void | Action | Action[] | Promise<void | Action | Action[]>;
+export type Action<Ctx extends object = {}> = (params: ActionParams<Ctx>) => void | Action | Action[] | Promise<void | Action | Action[]>;
 
 export interface ActionHooksFailures {
   path: string;
@@ -90,5 +89,3 @@ export type GetReturnType<T extends SetterScope> = Mapping[T];
 
 export interface Partials extends Record<string, string> {}
 export interface Helpers extends Record<string, any> {}
-
-export type ContextAction = (context: DeepReadonly<Context>) => Partial<Context> | Promise<Partial<Context>>;

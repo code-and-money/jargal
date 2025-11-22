@@ -18,7 +18,7 @@ export function selectGenerator(config: Config): Action {
 
       assert(generator);
 
-      return runGenerator({ context: { errors: [], answers: {}, context: {} }, renderer: new Renderer(), generator });
+      return runGenerator({ context: { errors: [], answers: {} }, renderer: new Renderer(), generator });
     },
   ];
 }

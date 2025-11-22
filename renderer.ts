@@ -31,10 +31,10 @@ export class Renderer {
     return this;
   }
 
-  public readonly partials: Partials = readonly(this.#partials);
-  public readonly helpers: Helpers = readonly(this.#helpers);
+  private readonly partials: Partials = readonly(this.#partials);
+  private readonly helpers: Helpers = readonly(this.#helpers);
 
-  public get<T extends SetterScope>(scope: T, name: string): GetReturnType<T> {
+  private get<T extends SetterScope>(scope: T, name: string): GetReturnType<T> {
     const target = get(this.#mapping, scope);
 
     if (!target) {
@@ -44,7 +44,7 @@ export class Renderer {
     return get(target, name);
   }
 
-  public list<T extends `${SetterScope}s`, O extends boolean = false>(
+  private list<T extends `${SetterScope}s`, O extends boolean = false>(
     scope: T,
     options?: { full?: O },
   ): O extends true ? MappingScope[T extends `${infer S}s` ? S : T][] : string[] {

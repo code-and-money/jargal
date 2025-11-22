@@ -1,15 +1,15 @@
 import type { Action, Context } from "../types.ts";
 
 export function renderTemplate({
-  fullPath,
+  templatePath,
   template,
   getData,
-  write,
+  save,
 }: {
   template: string;
-  fullPath: string;
+  templatePath: string;
   getData?: (ctx: Context) => Record<string, unknown>;
-  write?: Action<{ content?: string; destination?: string }>;
+  save?: Action<{ templateContent?: string; destination?: string }>;
 }): Action {
   if (!template) {
     return () => undefined;
@@ -20,10 +20,10 @@ export function renderTemplate({
 
     const renderedTemplate = params.renderer.renderString({ template, data });
 
-    const renderedPath = params.renderer.renderString({ template: fullPath, data });
+    const renderedPath = params.renderer.renderString({ template: templatePath, data });
 
-    if (write) {
-      return write({ ...params, content: renderedTemplate, destination: renderedPath });
+    if (save) {
+      return save({ ...params, context: { ...params.context, templateContent: renderedTemplate, destination: renderedPath } });
     }
   };
 }

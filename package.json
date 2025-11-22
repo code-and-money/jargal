@@ -12,7 +12,8 @@
     }
   ],
   "exports": {
-    ".": "./exports.ts",
+    "./old": "./exports.ts",
+    ".": "./jargal.ts",
     "./types": "./types.ts",
     "./actions": "./actions/exports.ts"
   },

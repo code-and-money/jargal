@@ -60,8 +60,6 @@ async function execRecursive(executed: Action | Action[], { context, renderer }:
     return await executeAction({ action: executed, context, renderer });
   }
 
-  // assert(!executed);
-
   return undefined;
 }
 
@@ -79,7 +77,7 @@ const ConfigSchema = v.object({
 });
 
 export async function run(runConfig: Config): Promise<void> {
-  const config = v.parse(ConfigSchema, runConfig);
+  const config = v.run(ConfigSchema, runConfig);
 
   if (config.generators.length === 1) {
     const generator = config.generators[0];
@@ -87,14 +85,14 @@ export async function run(runConfig: Config): Promise<void> {
     assert(generator);
 
     return await runGenerator({
-      context: { errors: [], answers: {}, context: {} },
+      context: { errors: [], answers: {} },
       renderer: new Renderer(),
       generator,
     });
   }
 
   return await runGenerator({
-    context: { errors: [], answers: {}, context: {} },
+    context: { errors: [], answers: {} },
     renderer: new Renderer(),
     generator: { name: "select", actions: [selectGenerator(config)] },
   });
