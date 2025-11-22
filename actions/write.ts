@@ -36,7 +36,7 @@ export function write({
     }
 
     if (doesExist && mode === "skip-if-exists") {
-      // console.info(`[SKIPPED] ${destination} (exists)`);
+      console.info(`[SKIPPED] ${destination} (exists)`);
       return;
     }
 
