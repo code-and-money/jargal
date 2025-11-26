@@ -2,11 +2,11 @@ import { get, set } from "es-toolkit/compat";
 import handlebars from "handlebars";
 
 import type { GetReturnType, HelperFn, Helpers, MappingScope, Partials, SetOptions, Setter, SetterScope } from "./types.ts";
-import { readonly, textHelpers } from "./lib.ts";
+import { readonly, textHelpers, utilHelpers } from "./lib.ts";
 
 export class Renderer {
   #partials: Partials = {};
-  #helpers: Helpers = textHelpers;
+  #helpers: Helpers = { ...textHelpers, ...utilHelpers };
 
   #mapping: { partial: Partials; helper: Helpers } = {
     partial: this.#partials,

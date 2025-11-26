@@ -89,3 +89,13 @@ class ReadOnlyProxyWriteError extends Error {
 export function readonly<T extends object>(target: T) {
   return new Proxy<T>(target, ReadOnlyProxyDescriptor);
 }
+
+export const utilHelpers = {
+  isdefined: function (value: unknown) {
+    return value !== undefined;
+  },
+
+  is: function (left: unknown, right: unknown) {
+    return left === right;
+  },
+};
