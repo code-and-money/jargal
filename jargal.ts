@@ -42,11 +42,11 @@ export class Jargal<const in out Context> {
     return this as any;
   }
 
-  render(params?: {
-    composeRenderData?: (ctx: Context) => RenderEntry[];
+  async render(params?: {
+    composeRenderData?: (ctx: Context) => RenderEntry[] | Promise<RenderEntry[]>;
     scope?: Context extends { templates: { [key: string]: any } } ? keyof Context["templates"] : "default";
-  }): Jargal<Context & { renderedContent: { savePath: string; content: string }[] }> {
-    const composeData: (ctx: Context) => RenderEntry[] =
+  }): Promise<Jargal<Context & { renderedContent: { savePath: string; content: string }[] }>> {
+    const composeData: (ctx: Context) => RenderEntry[] | Promise<RenderEntry[]> =
       params?.composeRenderData ??
       // @ts-expect-error
       ((ctx: Context) => ctx.renderData);
@@ -54,7 +54,7 @@ export class Jargal<const in out Context> {
     // @ts-expect-error
     const templatesToRender = this.#context.templates[params?.scope ?? "default"] as TemplatesMap;
 
-    const composedData = composeData(this.#context);
+    const composedData = await composeData(this.#context);
 
     for (const renderEntry of composedData) {
       if (!renderEntry.control || renderEntry.control === "auto") {
