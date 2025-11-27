@@ -1,6 +1,6 @@
 {
   "name": "@codeandmoney/jargal",
-  "version": "0.0.0-rc.6",
+  "version": "0.0.0-rc.7",
   "description": "Renderer",
   "license": "MIT",
   "author": "Code & Money Team",
@@ -15,7 +15,8 @@
     "./old": "./exports.ts",
     ".": "./jargal.ts",
     "./types": "./types.ts",
-    "./actions": "./actions/exports.ts"
+    "./actions": "./actions/exports.ts",
+    "./renderer": "./renderer.ts"
   },
   "dependencies": {
     "change-case": "^5.4.4",
