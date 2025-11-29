@@ -118,12 +118,17 @@ export class Jargal<const in out Context> {
     return this as any;
   }
 
-  async write(write?: (params: { savePath: string; content: string }) => void | Promise<void>): Promise<void> {
+  async write(
+    write?: (params: {
+      savePath: string;
+      content: string;
+      defultWrite: (params: { savePath: string; content: string }) => Promise<void>;
+    }) => void | Promise<void>,
+  ): Promise<void> {
     if (typeof write === "function") {
       // @ts-expect-error
       for (const renderConfig of this.#context.renderedContent as { savePath: string; content: string }[]) {
-        // console.log({ renderConfig })
-        await write(renderConfig);
+        await write({ ...renderConfig, defultWrite });
       }
 
       return;
@@ -132,8 +137,12 @@ export class Jargal<const in out Context> {
     // console.log({ renderedContent: this.#context.renderedContent})
     // @ts-expect-error
     for (const renderConfig of this.#context.renderedContent as { savePath: string; content: string }[]) {
-      await mkdir(dirname(renderConfig.savePath), { recursive: true });
-      await writeFile(renderConfig.savePath, new TextEncoder().encode(renderConfig.content), {});
+      defultWrite(renderConfig);
     }
   }
+}
+
+async function defultWrite(params: { savePath: string; content: string }): Promise<void> {
+  await mkdir(dirname(params.savePath), { recursive: true });
+  await writeFile(params.savePath, new TextEncoder().encode(params.content), {});
 }
