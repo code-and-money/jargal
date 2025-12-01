@@ -1,3 +1,4 @@
+import assert from "node:assert";
 import { readdir, readFile } from "node:fs/promises";
 import path, { resolve } from "node:path";
 
@@ -17,18 +18,23 @@ export async function templates<Scope extends string | undefined = undefined>(pa
   const removeExtension = engine === "handlebars" ? ".hbs" : "";
   const scopeKey = params.scope ? params.scope : "default";
 
-  let record = { [scopeKey]: {} } as Record<string, TemplatesMap>;
+  const record = { [scopeKey]: {} } as Record<string, TemplatesMap>;
 
   const resolvedPath = resolve(params.path);
 
   for await (const templatePath of walkDir(resolvedPath)) {
+    if (path.basename(templatePath).startsWith("_")) {
+      continue;
+    }
+
     const savePath = path.relative(resolvedPath, templatePath).replace(removeExtension, "");
 
     const contentRaw = await readFile(path.resolve(resolvedPath, templatePath));
     const data: TemplateData = { templateContent: new TextDecoder().decode(contentRaw), templatePath, savePath };
 
     if (!params.hooks) {
-      Object.assign(record[scopeKey]!, { [savePath]: data });
+      assert(record[scopeKey]);
+      Object.assign(record[scopeKey], { [savePath]: data });
       continue;
     }
 
@@ -40,7 +46,8 @@ export async function templates<Scope extends string | undefined = undefined>(pa
         [path_, data_] = hook(path_, data_);
       }
 
-      Object.assign(record[scopeKey]!, { [path_]: data_ });
+      assert(record[scopeKey]);
+      Object.assign(record[scopeKey], { [path_]: data_ });
     }
   }
 
