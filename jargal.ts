@@ -142,7 +142,11 @@ export class Jargal<const in out Context> {
   }
 }
 
-async function defultWrite(params: { savePath: string; content: string }): Promise<void> {
-  await mkdir(dirname(params.savePath), { recursive: true });
-  await writeFile(params.savePath, new TextEncoder().encode(params.content), {});
+async function defultWrite({ savePath, content }: { savePath: string; content: string }): Promise<void> {
+  try {
+    await mkdir(dirname(savePath), { recursive: true });
+  } catch (error) {
+    console.error({ savePath, content, error });
+  }
+  await writeFile(savePath, new TextEncoder().encode(content), {});
 }
