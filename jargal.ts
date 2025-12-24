@@ -30,7 +30,7 @@ export class Jargal<const in out Context> {
   }
 
   setContext<Setter extends (...args: any) => any>(setter: Setter): Jargal<ReturnType<Setter> & Context>;
-  setContext<const Setter extends Record<string, any>>(setter: Setter): Jargal<Setter & Context>;
+  setContext<Setter extends Record<string, any>>(setter: Setter): Jargal<Setter & Context>;
   setContext(setter: any) {
     if (typeof setter === "function") {
       const context = setter(this.#context);
@@ -54,7 +54,11 @@ export class Jargal<const in out Context> {
     // @ts-expect-error
     const templatesToRender = this.#context.templates[params?.scope ?? "default"] as TemplatesMap;
 
+    // console.log({ templatesToRender})
+
     const composedData = await composeData(this.#context);
+
+    // console.log({ composedData})
 
     for (const renderEntry of composedData) {
       if (!renderEntry.control || renderEntry.control === "auto") {
