@@ -10,7 +10,14 @@ import { context } from "./actions/jargal-context";
 
 export { templates, context };
 
-export type RenderEntry = { control: "user"; data: any; pathTemplate: string; contentTemplate: string } | { control?: "auto"; data: any; destination: string };
+export type RenderEntry =
+  | {
+      control: "user";
+      data: any;
+      pathTemplate: string;
+      contentTemplate: string;
+    }
+  | { control?: "auto"; data: any; destination: string };
 
 export class Jargal<const in out Context> {
   #context = {
@@ -65,8 +72,14 @@ export class Jargal<const in out Context> {
         for (const [filename, template] of Object.entries(templatesToRender)) {
           // @ts-expect-error
           this.#context.renderedContent.push({
-            savePath: this.#renderer.renderString({ template: join(renderEntry.destination, template.savePath), data: renderEntry.data }),
-            content: this.#renderer.renderString({ template: template.templateContent, data: renderEntry.data }),
+            savePath: this.#renderer.renderString({
+              template: join(renderEntry.destination, template.savePath),
+              data: renderEntry.data,
+            }),
+            content: this.#renderer.renderString({
+              template: template.templateContent,
+              data: renderEntry.data,
+            }),
           });
         }
 
@@ -76,8 +89,14 @@ export class Jargal<const in out Context> {
       if (renderEntry.control === "user") {
         // @ts-expect-error
         this.#context.renderedContent.push({
-          savePath: this.#renderer.renderString({ template: renderEntry.pathTemplate, data: renderEntry.data }),
-          content: this.#renderer.renderString({ template: renderEntry.contentTemplate, data: renderEntry.data }),
+          savePath: this.#renderer.renderString({
+            template: renderEntry.pathTemplate,
+            data: renderEntry.data,
+          }),
+          content: this.#renderer.renderString({
+            template: renderEntry.contentTemplate,
+            data: renderEntry.data,
+          }),
         });
 
         continue;
@@ -131,7 +150,10 @@ export class Jargal<const in out Context> {
   ): Promise<void> {
     if (typeof write === "function") {
       // @ts-expect-error
-      for (const renderConfig of this.#context.renderedContent as { savePath: string; content: string }[]) {
+      for (const renderConfig of this.#context.renderedContent as {
+        savePath: string;
+        content: string;
+      }[]) {
         await write({ ...renderConfig, defultWrite });
       }
 
@@ -140,7 +162,10 @@ export class Jargal<const in out Context> {
 
     // console.log({ renderedContent: this.#context.renderedContent})
     // @ts-expect-error
-    for (const renderConfig of this.#context.renderedContent as { savePath: string; content: string }[]) {
+    for (const renderConfig of this.#context.renderedContent as {
+      savePath: string;
+      content: string;
+    }[]) {
       defultWrite(renderConfig);
     }
   }

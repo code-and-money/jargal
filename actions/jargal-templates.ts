@@ -2,7 +2,12 @@ import assert from "node:assert";
 import { readdir, readFile } from "node:fs/promises";
 import path, { resolve } from "node:path";
 
-export type TemplateData = { templatePath: string; savePath: string; templateContent: string; metadata?: Record<string, any> };
+export type TemplateData = {
+  templatePath: string;
+  savePath: string;
+  templateContent: string;
+  metadata?: Record<string, any>;
+};
 
 export type TemplatesMap = Record<string, TemplateData>;
 
@@ -12,7 +17,9 @@ export async function templates<Scope extends string | undefined = undefined>(pa
   path: string;
   scope?: Scope;
   engine?: "handlebars";
-  hooks?: { onDataReady?: ((path: string, data: TemplateData) => [path: string, data: TemplateData])[] };
+  hooks?: {
+    onDataReady?: ((path: string, data: TemplateData) => [path: string, data: TemplateData])[];
+  };
 }): Promise<(ctx: Record<string, any>) => Templates<Scope extends undefined ? "default" : Scope>> {
   const engine = params?.engine ?? "handlebars";
   const removeExtension = engine === "handlebars" ? ".hbs" : "";
@@ -30,7 +37,11 @@ export async function templates<Scope extends string | undefined = undefined>(pa
     const savePath = path.relative(resolvedPath, templatePath).replace(removeExtension, "");
 
     const contentRaw = await readFile(path.resolve(resolvedPath, templatePath));
-    const data: TemplateData = { templateContent: new TextDecoder().decode(contentRaw), templatePath, savePath };
+    const data: TemplateData = {
+      templateContent: new TextDecoder().decode(contentRaw),
+      templatePath,
+      savePath,
+    };
 
     if (!params.hooks) {
       assert(record[scopeKey]);

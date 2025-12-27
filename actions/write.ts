@@ -10,11 +10,10 @@ export type WriteActionConfig = {
   mode?: "force" | "skip-if-exists";
 };
 
-export function write({
-  destination: writeDestination,
-  templateContent: writeContent,
-  mode,
-}: WriteActionConfig): Action<{ templateContent?: string; destination?: string }> {
+export function write({ destination: writeDestination, templateContent: writeContent, mode }: WriteActionConfig): Action<{
+  templateContent?: string;
+  destination?: string;
+}> {
   return async function execute({ context: { templateContent: executeContent, destination: executeDestination } }) {
     const destination = executeDestination || writeDestination;
     const templateContent = executeContent || writeContent;

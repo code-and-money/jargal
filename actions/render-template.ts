@@ -20,10 +20,20 @@ export function renderTemplate({
 
     const renderedTemplate = params.renderer.renderString({ template, data });
 
-    const renderedPath = params.renderer.renderString({ template: templatePath, data });
+    const renderedPath = params.renderer.renderString({
+      template: templatePath,
+      data,
+    });
 
     if (save) {
-      return save({ ...params, context: { ...params.context, templateContent: renderedTemplate, destination: renderedPath } });
+      return save({
+        ...params,
+        context: {
+          ...params.context,
+          templateContent: renderedTemplate,
+          destination: renderedPath,
+        },
+      });
     }
   };
 }

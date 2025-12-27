@@ -2,13 +2,19 @@ import type { ContextAction } from "../types.ts";
 import { readdir, readFile } from "node:fs/promises";
 import path, { resolve } from "node:path";
 
-type TemplateData = { templatePath: string; realativePath: string; templateContent: string };
+type TemplateData = {
+  templatePath: string;
+  realativePath: string;
+  templateContent: string;
+};
 
 export function loadTemplates(
   templatesPath: string,
   options: {
     scope?: string;
-    hooks?: { onDataReady?: ((path: string, data: TemplateData) => [path: string, data: TemplateData])[] };
+    hooks?: {
+      onDataReady?: ((path: string, data: TemplateData) => [path: string, data: TemplateData])[];
+    };
   },
 ): ContextAction<{ templates: Record<string, Map<string, TemplateData>> }> {
   return async function execute(params) {
@@ -22,7 +28,11 @@ export function loadTemplates(
       const realativePath = path.relative(templatesPath, templatePath);
 
       const contentRaw = await readFile(path.resolve(templatesPath, templatePath));
-      const data: TemplateData = { templateContent: new TextDecoder().decode(contentRaw), templatePath, realativePath };
+      const data: TemplateData = {
+        templateContent: new TextDecoder().decode(contentRaw),
+        templatePath,
+        realativePath,
+      };
 
       if (!options.hooks) {
         record[options.scope ? options.scope : "templates"]?.set(realativePath, data);
@@ -48,7 +58,9 @@ export function loadTemplates(
 export async function templates<Scope extends string | undefined = undefined>(params: {
   path: string;
   scope?: Scope;
-  hooks?: { onDataReady?: ((path: string, data: TemplateData) => [path: string, data: TemplateData])[] };
+  hooks?: {
+    onDataReady?: ((path: string, data: TemplateData) => [path: string, data: TemplateData])[];
+  };
 }): Promise<
   (ctx: Record<string, any>) => {
     templates: Record<Scope extends undefined ? "default" : Scope, Map<string, TemplateData>>;
@@ -68,7 +80,11 @@ export async function templates<Scope extends string | undefined = undefined>(pa
     const realativePath = path.relative(resolvedPath, templatePath);
 
     const contentRaw = await readFile(path.resolve(resolvedPath, templatePath));
-    const data: TemplateData = { templateContent: new TextDecoder().decode(contentRaw), templatePath, realativePath };
+    const data: TemplateData = {
+      templateContent: new TextDecoder().decode(contentRaw),
+      templatePath,
+      realativePath,
+    };
 
     if (!params.hooks) {
       record[params.scope ? params.scope : "default"]?.set(realativePath, data);
@@ -87,7 +103,9 @@ export async function templates<Scope extends string | undefined = undefined>(pa
     }
   }
 
-  return function setter(_ctx: Record<string, any>): { templates: Record<string, Map<string, TemplateData>> } {
+  return function setter(_ctx: Record<string, any>): {
+    templates: Record<string, Map<string, TemplateData>>;
+  } {
     return { templates: record };
   };
 }
