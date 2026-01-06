@@ -166,7 +166,7 @@ export class Jargal<const in out Context> {
       savePath: string;
       content: string;
     }[]) {
-      defultWrite(renderConfig);
+      await defultWrite(renderConfig);
     }
   }
 }
